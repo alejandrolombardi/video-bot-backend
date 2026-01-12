@@ -1,11 +1,25 @@
+# --- DEPENDENCIAS Y ENTORNOS
 node_modules/
-output/
-manual/
+venv/
+__pycache__/
+
+# --- BINARIOS Y EJECUTABLES
+*.exe
+*.dll
+
+# --- LOGS
 .env
 *.log
+
+# --- CARPETAS TEMPORALES Y BASURA ---
+sesion_robot/
+uploads/
+output/
+manual/
+
+# --- ARCHIVOS GENERADOS / MULTIMEDIA ---
 *.mp4
 *.mp3
 *.jpg
 *.png
-
-sesion_robot/
+guion.txt
