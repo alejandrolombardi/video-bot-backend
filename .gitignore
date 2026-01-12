@@ -1,0 +1,11 @@
+node_modules/
+output/
+manual/
+.env
+*.log
+*.mp4
+*.mp3
+*.jpg
+*.png
+
+sesion_robot/

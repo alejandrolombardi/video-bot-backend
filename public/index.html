@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Estudio IA - V40.5 Pure Energy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --cyber-blue: #00d2ff;
+        --cyber-cyan: #00f3ff;
+        --cyber-dark: #050505;
+        --cyber-panel: #0d1117;
+        --cyber-border: #1a2c3d;
+        --neon-glow: 0 0 15px rgba(0, 210, 255, 0.6);
+        --luminous-color: #00ffff; /* CIAN RADIOACTIVO */
+    }
+    html { height: 100%; }
+    body { 
+        background: var(--cyber-dark); 
+        color: #b0c4de; 
+        font-family: 'Share Tech Mono', monospace; 
+        margin: 0; padding: 20px; padding-bottom: 300px; font-size: 13px; 
+        background-image: radial-gradient(circle at 50% 50%, #0a192f 0%, #050505 100%);
+        overflow-y: scroll;
+    }
+    .container { 
+        background: var(--cyber-panel); padding: 20px; border-radius: 4px; border: 1px solid var(--cyber-border); 
+        max-width: 950px; margin: 0 auto 30px auto; box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    }
+    h1 { 
+        text-align: center; color: var(--luminous-color); font-family: 'Orbitron', sans-serif;
+        letter-spacing: 6px; text-transform: uppercase; text-shadow: 0 0 20px var(--luminous-color);
+        border-bottom: 1px solid var(--cyber-border); padding-bottom: 15px;
+    }
+    h2 { color: var(--cyber-cyan); font-family: 'Orbitron', sans-serif; border-left: 4px solid var(--luminous-color); padding-left: 12px; font-size: 14px; text-transform: uppercase; }
+    label { display: block; color: #5c7d99; margin-top: 12px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+    textarea, select, input { 
+        width: 100%; padding: 12px; background: #010409; color: var(--cyber-cyan); 
+        border: 1px solid var(--cyber-border); font-family: 'Share Tech Mono', monospace; 
+    }
+    button { 
+        width: 100%; padding: 12px; border: 1px solid var(--luminous-color); color: var(--luminous-color); 
+        background: rgba(0, 255, 255, 0.05); font-family: 'Orbitron', sans-serif; cursor: pointer; text-transform: uppercase;
+    }
+    button:hover { background: var(--luminous-color); color: #000; box-shadow: 0 0 20px var(--luminous-color); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .render-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+    .hidden { display: none; }
+    .mode-tabs { display: flex; margin-bottom: 25px; border-bottom: 1px solid var(--cyber-border); }
+    .tab { padding: 12px 30px; cursor: pointer; color: #555; font-family: 'Orbitron', sans-serif; font-size: 11px; }
+    .tab.active { color: var(--luminous-color); border-bottom: 2px solid var(--luminous-color); }
+    
+    .toggle-group { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+    .toggle-wrapper input { display: none; }
+    .toggle-wrapper label { 
+        display: block; background: #010409; border: 1px solid var(--cyber-border); 
+        padding: 12px; cursor: pointer; text-align: center; color: #444; font-size: 10px; 
+        transition: 0.3s;
+    }
+    #chkReanudar:checked + label { border-color: #00ff88; color: #00ff88; background: rgba(0,255,136,0.15); box-shadow: 0 0 20px rgba(0,255,136,0.4); }
+    #chkNoir:checked + label { border-color: #fff; color: #fff; background: rgba(255,255,255,0.2); box-shadow: 0 0 20px rgba(255,255,255,0.4); }
+    #chkTransiciones:checked + label { border-color: var(--cyber-cyan); color: var(--cyber-cyan); background: rgba(0,243,255,0.2); box-shadow: 0 0 20px rgba(0,243,255,0.4); }
+    #chkPendulo:checked + label { border-color: var(--luminous-color); color: var(--luminous-color); background: rgba(0,255,255,0.2); box-shadow: 0 0 20px rgba(0,255,255,0.4); }
+    #chkSubtitulos:checked + label { border-color: #ff0055; color: #ff0055; background: rgba(255,0,85,0.2); box-shadow: 0 0 20px rgba(255,0,85,0.4); }
+
+    .val-display { color: var(--luminous-color); float: right; font-family: monospace; font-size: 14px; font-weight: bold; }
+
+    #resAuto video {
+        max-width: 420px;
+        border: 2px solid var(--luminous-color);
+        border-radius: 8px;
+        box-shadow: 0 0 20px var(--luminous-color);
+        margin-top: 15px;
+    }
+
+    /* --- 🔥 BARRA PURA ENERGÍA (SIN RAYAS) 🔥 --- */
+    .status-dashboard { margin-top: 20px; background: #010409; border: 1px solid var(--cyber-border); padding: 20px; display: none; }
+    
+    .progress-track { 
+        height: 24px; 
+        background: rgba(0, 255, 255, 0.05); /* Fondo muy sutil */
+        border-radius: 12px;
+        overflow: hidden; 
+        border: 1px solid rgba(0, 255, 255, 0.3); /* Borde sutil */
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+        position: relative;
+    }
+    
+    .progress-fill { 
+        height: 100%; 
+        width: 0%; 
+        border-radius: 12px;
+        transition: width 0.3s ease-out;
+        
+        /* DEGRADADO LIMPIO: De azul cielo a blanco brillante */
+        background: linear-gradient(90deg, #00cbff, #00ffff); 
+        
+        /* BRILLO INTENSO (GLOW) */
+        box-shadow: 0 0 20px #00ffff, 0 0 45px #00ffff;
+    }
+
+</style>
+</head>
+<body onload="cargarPreferencias()">
+
+<h1>🎬 ESTUDIO NOIR V125 PURE</h1>
+
+<div class="container">
+    <h2>🔑 Llaves de Acceso</h2>
+    <div class="grid-2">
+        <div><label>🤖 Gemini API</label><input type="password" id="geminiApiKey" onchange="guardarPreferencia('geminiApiKey', this.value)"></div>
+        <div>
+            <label>🥃 Whisk Token</label>
+            <div style="display:flex; gap:5px;">
+                <input type="password" id="whiskToken" onchange="guardarPreferencia('whiskToken', this.value)">
+                <button onclick="cazarTokenAuto(this)" style="width:auto;">🤖 AUTO</button>
+            </div>
+        </div>
+    </div>
+    <label>🗣️ ElevenLabs API Key</label>
+    <input type="password" id="elevenApiKey" onchange="guardarPreferencia('elevenApiKey', this.value)">
+    <div class="grid-2">
+        <div>
+            <label>👤 Voz ID</label>
+            <select id="voiceId" onchange="guardarPreferencia('voiceId', this.value)">
+                <option value="pNInz6obpgDQGcFmaJgB">Adam</option>
+                <option value="erXw7cyQ90O7W3zG1W82">Antoni</option>
+            </select>
+        </div>
+        <div>
+            <label>💰 Saldo</label>
+            <button onclick="consultarSaldoEleven(this)">Consultar</button>
+            <div id="saldo-info" style="text-align:center; font-size:11px; color:var(--luminous-color);">--</div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="mode-tabs">
+        <div class="tab active" onclick="switchMode('short')" id="tabShort">✨ CORTO</div>
+        <div class="tab" onclick="switchMode('long')" id="tabLong">📜 LARGO</div>
+    </div>
+    <div id="modeShort">
+        <div class="grid-2">
+            <div><label>💡 Temática:</label><input type="text" id="tematicaInput"></div>
+            <div><label>🎭 Estilo:</label><input type="text" id="estiloCortoInput" value="Film Noir, Blanco y Negro"></div>
+        </div>
+        <button onclick="inventarHistoria(this)">✨ Generar Idea</button>
+        <label>🧬 ADN Personajes:</label><textarea id="personajesInput" style="height:60px; color:#00ffcc;"></textarea>
+        <label>📖 Sinopsis:</label><textarea id="ideaInput" style="height:60px;"></textarea>
+        <button onclick="crearGuion(this)">🧠 Crear Guion Técnico</button>
+    </div>
+    <div id="modeLong" class="hidden">
+        <label>💡 Tema General:</label><input type="text" id="temaLargoInput">
+        <label>🖋️ Estilo Narrativo:</label><textarea id="estiloNarrativoInput" style="height:60px;"></textarea>
+        <button onclick="redactarGuionLargo(this)">✨ Redactar Bloques (800p)</button>
+        <textarea id="textoLargoInput" style="height:120px; color:#81ecec;"></textarea>
+    </div>
+</div>
+
+<div class="container">
+    <h2>🎥 Sala de Montaje</h2>
+    <div class="render-layout">
+        <div>
+            <label>📝 GUION FINAL (Texto || Visual Prompt)</label>
+            <textarea id="guionFinal" style="height:400px; color:var(--cyber-cyan); background:#000;"></textarea>
+            
+            <label>🎨 Estilo Visual Rápido:</label>
+            <div class="grid-3" style="margin-top:5px;">
+                <button onclick="setVisualNoir()">🕵️ Noir</button>
+                <button onclick="setVisualPixar()">🧸 Pixar</button>
+                <button onclick="setVisualRealista()">🎥 Cine</button>
+            </div>
+            <textarea id="estiloVisualLargoInput" style="height:50px; margin-top:10px;" placeholder="Visual params..."></textarea>
+        </div>
+        <div>
+            <label>📐 Formato</label>
+            <select id="formatoAuto"><option value="16:9">Horizontal (16:9)</option><option value="9:16">Vertical (9:16)</option></select>
+            
+            <label>🎧 Subtítulos</label>
+            <select id="tipoSub">
+                <option value="karaoke">Dinámico (Karaoke)</option>
+                <option value="estatico">Estático (Bloques)</option>
+            </select>
+
+            <label>🎵 Música de Fondo <span id="vol-text" class="val-display">12</span></label>
+            <button onclick="document.getElementById('inputMusica').click()" style="background: rgba(0,255,255,0.05); margin-bottom: 5px;">📂 SUBIR MP3</button>
+            <input type="file" id="inputMusica" hidden onchange="subirMusica(this)">
+            <input type="hidden" id="nombreMusicaManual" value="">
+            <input type="range" id="volumenMusica" min="0" max="100" value="12" oninput="actualizarVolumenUI(this.value)">
+
+            <label>🔥 PANEL DE EFECTOS</label>
+            <div class="toggle-group">
+                <div class="toggle-wrapper"><input type="checkbox" id="chkReanudar" checked><label for="chkReanudar">💾 REANUDAR</label></div>
+                <div class="toggle-wrapper"><input type="checkbox" id="chkNoir" checked><label for="chkNoir">🕵️ RUIDO NOIR</label></div>
+                <div class="toggle-wrapper"><input type="checkbox" id="chkTransiciones" checked><label for="chkTransiciones">🎬 FADE OUT</label></div>
+                <div class="toggle-wrapper"><input type="checkbox" id="chkPendulo"><label for="chkPendulo">🕰️ PÉNDULO</label></div>
+                <div class="toggle-wrapper" style="grid-column: span 2;">
+                    <input type="checkbox" id="chkSubtitulos" checked>
+                    <label for="chkSubtitulos">📝 ACTIVAR SUBTÍTULOS</label>
+                </div>
+            </div>
+
+            <div id="panelPendulo" style="display:none; padding:10px; background:#010409; border:1px solid #333; margin-top:10px;">
+                <label>INTENSIDAD <span id="int-val" class="val-display">4</span></label>
+                <input type="range" id="rngIntensidad" min="1" max="20" value="4" oninput="document.getElementById('int-val').innerText = this.value">
+                <label>VELOCIDAD <span id="vel-val" class="val-display">1</span></label>
+                <input type="range" id="rngVelocidad" min="1" max="10" value="1" oninput="document.getElementById('vel-val').innerText = this.value">
+            </div>
+
+            <div class="hero-actions" style="display:flex; flex-direction:column; gap:10px; margin-top:25px;">
+                <button onclick="generarVideo(this)" style="height:65px; font-size:16px; border-width: 2px;">🚀 INICIAR PRODUCCIÓN</button>
+                <button onclick="limpiarSoloMp4()" style="border-color:#34495e; color:#5c7d99;">🗑️ LIMPIAR RENDERS</button>
+                <button onclick="borrarEscena()" style="border-color:#e50914; color:#e50914;">🗑️ BORRAR ESCENA (ID)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="statusBar" class="status-dashboard">
+        <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+        <div style="display:flex; justify-content:space-between; font-size:12px; margin-top: 10px; align-items: center;">
+            <span id="statusText" style="color:#e0ffff; text-shadow: 0 0 5px #00ffff;">Esperando...</span>
+            <span id="timerText" style="color: #00ffff; font-weight: bold; font-family: 'Orbitron', monospace; font-size:16px; text-shadow: 0 0 10px #00ffff;">⏱️ 00:00</span>
+        </div>
+    </div>
+    
+    <div id="resAuto" style="text-align: center;"></div>
+</div>
+
+<script>
+// --- VARIABLES GLOBALES ---
+let timerInterval; 
+
+function actualizarVolumenUI(val) { document.getElementById('vol-text').innerText = val; }
+
+const VISUAL_NOIR = "Masterpiece, black and white high-end modern noir graphic novel art, dramatic lighting, 8k.";
+const VISUAL_REALISTA = "Hyper-realistic 8k cinematic footage, color graded, highly detailed.";
+const VISUAL_PIXAR = "Masterpiece, Disney Pixar inspired 3D style, cinematic lighting, 4k render.";
+
+function setVisualNoir() { document.getElementById("estiloVisualLargoInput").value = VISUAL_NOIR; }
+function setVisualRealista() { document.getElementById("estiloVisualLargoInput").value = VISUAL_REALISTA; }
+function setVisualPixar() { document.getElementById("estiloVisualLargoInput").value = VISUAL_PIXAR; }
+
+function switchMode(m) {
+    document.getElementById('modeShort').classList.toggle('hidden', m !== 'short');
+    document.getElementById('modeLong').classList.toggle('hidden', m !== 'long');
+    document.getElementById('tabShort').classList.toggle('active', m === 'short');
+    document.getElementById('tabLong').classList.toggle('active', m === 'long');
+}
+
+document.getElementById('chkPendulo').onchange = function() {
+    document.getElementById('panelPendulo').style.display = this.checked ? 'block' : 'none';
+};
+
+function guardarPreferencia(k,v) { localStorage.setItem(k,v); }
+function cargarPreferencias() { ['geminiApiKey','whiskToken','elevenApiKey','voiceId'].forEach(k=>{const v=localStorage.getItem(k); if(v)document.getElementById(k).value=v;}); }
+
+// --- ⏱️ RELOJ FLUIDO ---
+function startClientTimer() {
+    clearInterval(timerInterval); 
+    const startTime = Date.now();
+    const timerElement = document.getElementById("timerText");
+    
+    timerInterval = setInterval(() => {
+        const now = Date.now();
+        const diff = Math.floor((now - startTime) / 1000);
+        const m = Math.floor(diff / 60).toString().padStart(2, '0');
+        const s = (diff % 60).toString().padStart(2, '0');
+        timerElement.innerText = `⏱️ ${m}:${s}`;
+    }, 1000); 
+}
+
+function stopClientTimer() { clearInterval(timerInterval); }
+
+// --- 🚀 PRODUCCIÓN CON PORCENTAJE ---
+async function generarVideo(btn) {
+    const guion = document.getElementById("guionFinal").value;
+    if(!guion) return alert("Guion vacío");
+    
+    // UI RESET
+    document.getElementById('statusBar').style.display = 'block';
+    document.getElementById("progressFill").style.width = "0%";
+    document.getElementById("statusText").innerText = "Iniciando...";
+    document.getElementById("timerText").innerText = "⏱️ 00:00";
+    
+    startClientTimer();
+    
+    btn.disabled = true; btn.innerText = "PROCESANDO...";
+    
+    const volDecimal = document.getElementById('volumenMusica').value / 200; 
+
+    const payload = {
+        guion, 
+        estilo: document.getElementById("estiloVisualLargoInput").value, 
+        formato: document.getElementById("formatoAuto").value, 
+        motorImagenes: "whisk",
+        googleApiKey: document.getElementById("whiskToken").value, 
+        geminiApiKey: document.getElementById("geminiApiKey").value,
+        elevenApiKey: document.getElementById("elevenApiKey").value, 
+        voiceId: document.getElementById("voiceId").value,
+        reanudar: document.getElementById("chkReanudar").checked, 
+        efectoNoir: document.getElementById("chkNoir").checked, 
+        efectoPendulo: document.getElementById("chkPendulo").checked,
+        intensidadPendulo: document.getElementById("rngIntensidad").value,
+        velocidadPendulo: document.getElementById("rngVelocidad").value,
+        usarSubtitulos: document.getElementById("chkSubtitulos").checked,
+        tipoVoz: "premium", 
+        tipoSub: document.getElementById("tipoSub").value,
+        musicaManual: document.getElementById("nombreMusicaManual").value,
+        volumenMusica: volDecimal
+    };
+
+    try {
+        const response = await fetch("/api/generar-full-ia", { 
+            method:"POST", 
+            headers:{"Content-Type":"application/json"}, 
+            body: JSON.stringify(payload) 
+        });
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            const chunk = decoder.decode(value);
+            const lines = chunk.split("\n");
+            
+            for (const line of lines) {
+                if (line.trim()) {
+                    try {
+                        const data = JSON.parse(line);
+                        
+                        if (data.progreso) {
+                            document.getElementById("progressFill").style.width = data.progreso + "%";
+                        }
+                        
+                        // 🔥 PORCENTAJE 🔥
+                        if (data.mensaje) {
+                            let textoDisplay = data.mensaje;
+                            if (data.progreso) {
+                                textoDisplay += ` [${data.progreso}%]`;
+                            }
+                            document.getElementById("statusText").innerText = textoDisplay;
+                        }
+                        
+                        if (data.videoUrl) {
+                            stopClientTimer();
+                            document.getElementById("resAuto").innerHTML = `<h3>✅ PROYECTO LISTO</h3><video src="${data.videoUrl}?t=${Date.now()}" controls></video>`;
+                            document.getElementById("progressFill").style.width = "100%";
+                            document.getElementById("statusText").innerText = "¡Renderizado Completo! [100%]";
+                        }
+                        if (data.error) {
+                            stopClientTimer();
+                            alert("Error: " + data.error);
+                        }
+                    } catch (e) { console.log("Parcial:", line); }
+                }
+            }
+        }
+
+    } catch(e) { 
+        stopClientTimer();
+        alert("Error de conexión"); 
+        console.error(e);
+    }
+    
+    btn.disabled = false; btn.innerText = "🚀 INICIAR PRODUCCIÓN";
+}
+
+// --- FUNCIONES AUXILIARES ---
+async function subirMusica(input) {
+    if(!input.files[0]) return;
+    const btn = input.previousElementSibling; btn.innerText = "⏳ SUBIENDO...";
+    const formData = new FormData(); formData.append("audio", input.files[0]);
+    try {
+        const res = await fetch("/api/subir-musica", { method: "POST", body: formData });
+        const d = await res.json();
+        if (d.ok) { 
+            document.getElementById('nombreMusicaManual').value = d.filename; 
+            btn.innerText = "✅ MÚSICA LISTA";
+            btn.style.borderColor = "#00ffff"; btn.style.color = "#00ffff";
+            alert("Sincronizado: " + d.filename);
+        }
+    } catch (e) { alert("Fallo subida"); btn.innerText = "📂 SUBIR MP3"; }
+}
+async function borrarEscena() {
+    const n = prompt("Ingrese IDs (ej: 1, 5-10, 12):"); if (!n) return;
+    const res = await fetch("/api/borrar-escena", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ num: n }) });
+    const d = await res.json(); if(d.ok) alert("🗑️ Eliminado");
+}
+async function inventarHistoria(btn) { 
+    const res = await fetch("/api/inventar-historia", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ tematica: document.getElementById('tematicaInput').value, googleApiKey: document.getElementById('geminiApiKey').value }) });
+    const d = await res.json(); if(d.ok) { document.getElementById('ideaInput').value = d.idea; document.getElementById('personajesInput').value = d.personajes.join("\n"); }
+}
+async function crearGuion(btn) { 
+    const res = await fetch("/api/mejorar-guion-gemini", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ historiaBruta: document.getElementById('ideaInput').value, personajes: document.getElementById('personajesInput').value, googleApiKey: document.getElementById('geminiApiKey').value }) });
+    const d = await res.json(); if(d.ok) document.getElementById('guionFinal').value = d.guionMejorado;
+}
+async function cazarTokenAuto(btn) { try { const res = await fetch("/api/obtener-token-auto"); const d = await res.json(); if(d.ok) document.getElementById('whiskToken').value = d.token; } catch(e) {} }
+async function consultarSaldoEleven(btn) { try { const res = await fetch('/api/saldo-eleven', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ apiKey: document.getElementById('elevenApiKey').value }) }); const d = await res.json(); if(d.ok) document.getElementById('saldo-info').innerText = d.restante.toLocaleString() + " chars"; } catch(e) {} }
+async function limpiarSoloMp4() { if(confirm("¿Purgar renders?")) await fetch("/api/limpiar-renders", {method:"POST"}); }
+</script>
+</body>
+</html>
